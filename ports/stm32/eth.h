@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2013, 2014 Damien P. George
+ * Copyright (c) 2019 Damien P. George
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#ifndef MICROPY_INCLUDED_STM32_PIN_STATIC_AF_H
-#define MICROPY_INCLUDED_STM32_PIN_STATIC_AF_H
+#ifndef MICROPY_INCLUDED_STM32_ETH_H
+#define MICROPY_INCLUDED_STM32_ETH_H
 
-#include "py/mphal.h"
-#include "genhdr/pins.h"
-#include "genhdr/pins_af_defs.h"
+typedef struct _eth_t eth_t;
+extern eth_t eth_instance;
 
-#if 0 // Enable to test if AF's are statically compiled
-#define mp_hal_pin_config_alt_static(pin_obj, mode, pull, fn_type) \
-        mp_hal_pin_config(pin_obj, mode, pull, fn_type(pin_obj)); \
-        _Static_assert(fn_type(pin_obj) != -1, ""); \
-        _Static_assert(__builtin_constant_p(fn_type(pin_obj)) == 1, "")
+void eth_init(eth_t *self, int mac_idx);
+void eth_set_trace(eth_t *self, uint32_t value);
+struct netif *eth_netif(eth_t *self);
+int eth_link_status(eth_t *self);
+int eth_start(eth_t *self);
+int eth_stop(eth_t *self);
 
-#else
-
-#define mp_hal_pin_config_alt_static(pin_obj, mode, pull, fn_type) \
-        mp_hal_pin_config(pin_obj, mode, pull, fn_type(pin_obj)) /* Overflow Error => alt func not found */
-
-#define mp_hal_pin_config_alt_static_speed(pin_obj, mode, pull, speed, fn_type) \
-        mp_hal_pin_config(pin_obj, mode, pull, fn_type(pin_obj)); /* Overflow Error => alt func not found */ \
-        mp_hal_pin_config_speed(pin_obj, speed)
-
-#endif
-
-#endif // MICROPY_INCLUDED_STM32_PIN_STATIC_AF_H
+#endif // MICROPY_INCLUDED_STM32_ETH_H
